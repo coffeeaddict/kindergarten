@@ -1,6 +1,6 @@
 module Kindergarten
   class Sandbox
-    attr_reader :child, :governess
+    attr_reader :child, :governess, :perimeter
 
     def initialize(child)
       @child     = child
@@ -28,37 +28,33 @@ module Kindergarten
 
     def unguarded(&block)
       @unguarded = true
-      governess.unguarded do
-        yield(self)
-      end
+      yield
       @unguarded = false
     end
 
-    def force_guard(&block)
-      before = governess.guard_count.dup
+    def force_guard(name, &block)
+      before = governess.guard_count
       res    = yield
 
-      if @unguarded == true || governess.guard_count == before
-        raise "Unguarded sandbox method invoked"
+      if @unguarded != true && governess.guard_count == before
+        raise Kindergarten::Perimeter::Unguarded.new(
+          "#{name} was executed without propper guarding"
+        )
       end
 
       return res
     end
 
-
     def method_missing(name, *args, &block)
       super
-
     rescue NoMethodError => ex
-      @perimeter.each do |object|
-        if object.sandbox_methods.include?(name)
-          return force_guard do
-            object.send(name, *args, &block)
-          end
+      @perimeter.each do |perimeter|
+        if perimeter.sandbox_methods.include?(name)
+          return force_guard(name) { perimeter.send(name, *args, &block) }
         end
       end
 
-      # still here? then there is no psrt of the erimeter that provides method
+      # still here? then there is no part of the perimeter that provides method
       raise ex
     end
   end

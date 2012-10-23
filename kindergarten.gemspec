@@ -16,6 +16,7 @@ Gem::Specification.new do |gem|
   gem.version       = Kindergarten::VERSION
 
   gem.add_dependency('cancan', ['~> 1.6.8'])
+  gem.add_dependency('activesupport', ['~> 3.2'])
 
   gem.add_development_dependency('rspec', ['~> 2.10'])
 end

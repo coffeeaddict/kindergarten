@@ -1,4 +1,5 @@
 module Kindergarten
+  # Signals unallowed access
   class AccessDenied < CanCan::AccessDenied
     def initialize(action, target, opts)
       message = opts.delete(:message)
@@ -12,6 +13,7 @@ module Kindergarten
   end
 
   class Perimeter
+    # Signals bad sandbox method implementation  
     class Unguarded < SecurityError; end
   end
 end

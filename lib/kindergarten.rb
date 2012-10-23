@@ -1,4 +1,5 @@
 require 'cancan'
+require 'active_support/core_ext'
 
 require "kindergarten/version"
 require "kindergarten/sandbox"
