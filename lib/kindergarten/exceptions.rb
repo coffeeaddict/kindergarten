@@ -1,4 +1,4 @@
-class Kindergarten
+module Kindergarten
   class AccessDenied < CanCan::AccessDenied
     def initialize(action, target, opts)
       message = opts.delete(:message)
@@ -9,5 +9,9 @@ class Kindergarten
 
       super(message, action, target)
     end
+  end
+
+  class Perimeter
+    class Unguarded < SecurityError; end
   end
 end

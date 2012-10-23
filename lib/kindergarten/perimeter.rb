@@ -1,4 +1,4 @@
-class Kindergarten
+module Kindergarten
   class Perimeter
     class << self
       attr_reader :sandboxed_methods, :govern_proc

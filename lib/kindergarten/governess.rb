@@ -1,4 +1,4 @@
-class Kindergarten
+module Kindergarten
   class Governess
     include CanCan::Ability
 
