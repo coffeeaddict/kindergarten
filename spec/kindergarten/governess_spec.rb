@@ -1,21 +1,21 @@
 require 'spec_helper'
 
-describe Kindergarten::Governess do
+describe Kindergarten::HeadGoverness do
   before(:each) do
-    @governess = Kindergarten::Governess.new("child")
+    @governess = Kindergarten::HeadGoverness.new("child")
   end
-  
+
   it "should include CanCan ability" do
     @governess.should be_kind_of(CanCan::Ability)
   end
-  
+
   describe :governing do
     it "should guard the child" do
       expect {
         @governess.guard(:free, "Willy")
       }.to raise_error(Kindergarten::AccessDenied)
     end
-    
+
     it "should keep a closed eye" do
       expect {
         @governess.unguarded do
@@ -24,7 +24,7 @@ describe Kindergarten::Governess do
       }.to_not raise_error(Kindergarten::AccessDenied)
     end
   end
-  
+
   describe :washing do
     it "should scrub attributes" do
       attr     = { a: 1, b: 2, c: 3 }
@@ -32,14 +32,14 @@ describe Kindergarten::Governess do
       scrubbed = @governess.scrub(attr, :a, :c)
       scrubbed.should_not be_has_key(:b)
     end
-    
+
     it "should return a ScrubbedHash after scrubbing" do
       attr     = { a: 1, b: 2, c: 3 }
 
       scrubbed = @governess.scrub(attr, :a, :c)
-      scrubbed.should be_kind_of(Kindergarten::ScrubbedHash)      
+      scrubbed.should be_kind_of(Kindergarten::ScrubbedHash)
     end
-    
+
     it "should rinse attributes" do
       attr   = { a: "1", b: "2a", c: "3" }
       rinsed = @governess.rinse(attr, a: /(\d+)/, b: /(\D+)/)
@@ -48,11 +48,11 @@ describe Kindergarten::Governess do
       rinsed[:a].should eq "1"
       rinsed[:b].should eq "a"
     end
-    
+
     it "should pass attributes" do
       attr   = { a: "1", b: "2a", c: "3" }
       rinsed = @governess.rinse(attr, a: :pass, c: :pass)
-      
+
       rinsed.should_not be_has_key(:b)
       rinsed[:a].should eq "1"
       rinsed[:c].should eq "3"

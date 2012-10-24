@@ -4,7 +4,7 @@ module Kindergarten
 
     def initialize(child)
       @child     = child
-      @governess = Kindergarten::Governess.new(child)
+      @governess = Kindergarten::HeadGoverness.new(child)
 
       @perimeter   = []
       def @perimeter.include?(other)
@@ -16,7 +16,19 @@ module Kindergarten
 
     def extend_perimeter(*perimeter_classes)
       perimeter_classes.each do |perimeter_class|
-        perimeter = perimeter_class.new(self.child, self.governess)
+        # if the perimeter specifies a governess, use that - otherwise appoint
+        # the head governess
+        child     = self.child
+        governess = perimeter_class.governess ?
+          perimeter_class.governess.new(child) :
+          self.governess
+
+        perimeter = perimeter_class.new(child, governess)
+
+        # the head governess must know all the rules
+        unless governess == self.governess
+          self.governess.instance_eval &perimeter_class.govern_proc
+        end
 
         raise ArgumentError.new(
           "Module must inherit from Kindergarten::Perimeter"
@@ -32,25 +44,14 @@ module Kindergarten
       @unguarded = false
     end
 
-    def force_guard(name, &block)
-      before = governess.guard_count
-      res    = yield
-
-      if @unguarded != true && governess.guard_count == before
-        raise Kindergarten::Perimeter::Unguarded.new(
-          "#{name} was executed without propper guarding"
-        )
-      end
-
-      return res
-    end
-
     def method_missing(name, *args, &block)
       super
     rescue NoMethodError => ex
       @perimeter.each do |perimeter|
         if perimeter.sandbox_methods.include?(name)
-          return force_guard(name) { perimeter.send(name, *args, &block) }
+          return perimeter.governed(name, @unguarded) do
+            perimeter.send(name, *args, &block)
+          end
         end
       end
 

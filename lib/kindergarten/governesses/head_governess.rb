@@ -1,47 +1,45 @@
 module Kindergarten
-  # Hash with only allowed keys
-  class ScrubbedHash < Hash; end
-  
-  # Hash with only allowed keys and untainted values
-  class RinsedHash < Hash; end
-
   # The Governess keeps an eye on the child in the sandbox and makes sure
   # she plays nicely and within the bounds of legality
-  # 
-  class Governess
-    class << self
-      attr_accessor :forbidden_keys
-    end
-    
-    self.forbidden_keys = []
-    
-    # Check how often we guarded something
-    attr_reader :guard_count
-
+  #
+  class HeadGoverness
     include CanCan::Ability
 
     def initialize(child)
-      @child       = child
-      @guard_count = 0
-      @unguarded   = false
-      @rules       = []
+      @child     = child
+      @unguarded = false
+      @rules     = []
     end
 
     # The governess is empty when no rules have been defined
     def empty?
       @rules.empty?
     end
-    
-    # Check to see if the child can do something, increments @guard_count 
+
+    # Perform a sandbox method within the care of the governess.
+    #
+    # The HeadGoverness does nothing with it.
+    #
+    # @param [Symbol] method The name of the method that will be executed (for
+    #   logging, record-keeping, raising, etc.)
+    # @return The result of the block
+    #
+    def governed(method, &block)
+      raise "You must specify a block" unless block_given?
+
+      return yield
+    end
+
+    # Check to see if the child can do something, increments @guard_count
     #
     # @param action Action to take
     # @param target On given target
     # @param opts [Hash] options
-    # @option opts [String] :message The message on access denied 
+    # @option opts [String] :message The message on access denied
     #
     # @raise [Kindergarten::AccessDenied] when the kindergarten is guarded and
     #   the action is not allowed
-    #   
+    #
     # @return The given target to allow
     #     def project(id)
     #       project = Project.find(id)
@@ -50,10 +48,8 @@ module Kindergarten
     #
     def guard(action, target, opts={})
       if guarded? && cannot?(action, target)
-        raise Kindergarten::AccessDenied.new(action, target, opts) 
+        raise Kindergarten::AccessDenied.new(action, target, opts)
       end
-
-      @guard_count += 1
 
       # to allow
       #   def project(id)
@@ -64,17 +60,16 @@ module Kindergarten
       return target
     end
 
-    # Increment the @guard_count without looking.
-    #
-    # When a block is given, set the Governess to unguarded during the 
+    # When a block is given, set the Governess to unguarded during the
     # execution of the block
     #
     def unguarded(&block)
-      @guard_count += 1
       if block_given?
+        before = @unguarded
+
         @unguarded = true
         yield
-        @unguarded = false
+        @unguarded = before
       end
     end
 
@@ -85,7 +80,7 @@ module Kindergarten
     def unguarded?
       !!@unguarded
     end
-    
+
     # Scrub a hash of any key that is not specified
     #
     # @param [Hash] attributes An attributes-hash to scrub
@@ -94,10 +89,12 @@ module Kindergarten
     # @return [ScrubbedHash] a hash with only allowed keys
     def scrub(attributes, *list)
       list.map!(&:to_sym)
-      
+
+      forbidden = Kindergarten::Governesses.forbidden_keys
+
       Kindergarten::ScrubbedHash[
         attributes.symbolize_keys!.delete_if do |key,value|
-          self.class.forbidden_keys.include?(key) || !list.include?(key)
+          forbidden.include?(key) || !list.include?(key)
         end
       ]
     end
@@ -105,11 +102,11 @@ module Kindergarten
     # Scrub a hash of any key that is not specified
     #
     # @param [Hash] attributes An attributes-hash to scrub
-    # @param [Hash] untaint_opts Specify a Regexp for each key. The value from 
-    #   the attributes will be matched against the regexp and replaced with 
+    # @param [Hash] untaint_opts Specify a Regexp for each key. The value from
+    #   the attributes will be matched against the regexp and replaced with
     #   the first result.
     #
-    #   specify :pass instead of a Regexp to let the value pass without 
+    #   specify :pass instead of a Regexp to let the value pass without
     #   matching (usefull for non strings, etc.)
     #
     # @return [RinsedHash] a hash with only allowed keys and untainted values
@@ -138,9 +135,9 @@ module Kindergarten
           scrubbed.delete key
         else
           scrubbed[key] = match[1]
-        end 
+        end
       end
-      
+
       return Kindergarten::RinsedHash[scrubbed]
     end
   end
