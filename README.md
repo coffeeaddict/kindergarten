@@ -1,8 +1,10 @@
 # Kindergarten
 
+[![Build Status](https://secure.travis-ci.org/coffeeaddict/kindergarten.png)](http://travis-ci.org/coffeeaddict/kindergarten)
+
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/coffeeaddict/kindergarten)
 
-A way to achieve modularity and modular security with a sandbox on steroids. 
+A way to achieve modularity and modular security with a sandbox on steroids.
 
 ## Installation
 
@@ -30,31 +32,31 @@ class MyPlayModule < Kindergarten::Perimeter
   govern do |child|
     can :watch, Television
     cannot :watch, CableTV
-    
+
     can :eat, Candy do |candy|
       child.quotum.allows(candy)
     end
   end
-  
+
   # define methods for the sandbox
   sandbox :watch_tv, :eat
-  
+
   def watch_tv(tv)
     guard(:watch, tv)
     child.watch(tv)
 
     sleep(:four)
   end
-  
+
   def eat(candy)
     guard(:eat, candy)
     child.eat(candy)
   end
-  
+
   def sleep(len) # not_accessible_from_outside
     child.sleep(len)
   end
-end  
+end
 
 # load the child and the module into a sandbox
 sandbox = Kindergarten.sandbox(child)
