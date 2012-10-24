@@ -15,3 +15,5 @@ spec/reports
 test/tmp
 test/version_tmp
 tmp
+spec/support/db/test.db
+spec/support/log/test.log
