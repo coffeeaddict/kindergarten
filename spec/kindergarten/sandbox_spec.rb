@@ -33,4 +33,20 @@ describe Kindergarten::Sandbox do
       sandbox.perimeter.empty?
     }
   end
+  
+  describe :HeadGoverness do
+    before(:each) do
+      @sandbox = Kindergarten::Sandbox.new(:child)
+      @sandbox.extend_perimeter(SpecPerimeter, PuppetPerimeter)      
+    end
+
+    it "should tell the outside what is allowed" do
+      @sandbox.should be_allowed(:view, "string")
+    end
+    
+    it "should know the rules accross perimeters" do
+      puppet = @sandbox.grab_puppet
+      @sandbox.should be_disallowed(:bbq, puppet)
+    end
+  end
 end

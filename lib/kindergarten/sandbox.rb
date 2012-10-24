@@ -26,8 +26,8 @@ module Kindergarten
         perimeter = perimeter_class.new(child, governess)
 
         # the head governess must know all the rules
-        unless governess == self.governess
-          self.governess.instance_eval &perimeter_class.govern_proc
+        unless governess == self.governess || perimeter_class.govern_proc.nil?
+          self.governess.instance_eval(&perimeter_class.govern_proc)
         end
 
         raise ArgumentError.new(
@@ -37,12 +37,24 @@ module Kindergarten
         @perimeter << perimeter unless @perimeter.include?(perimeter)
       end
     end
+    alias_method :load_perimeter, :extend_perimeter
+    alias_method :load_module, :extend_perimeter
 
     def unguarded(&block)
       @unguarded = true
       yield
       @unguarded = false
     end
+
+    def allows?(action, target)
+      governess.can?(action, target)
+    end
+    alias_method :allowed?, :allows?
+    
+    def disallows?(action, target)
+      governess.cannot?(action, target)
+    end
+    alias_method :disallowed?, :disallows?
 
     def method_missing(name, *args, &block)
       super
