@@ -83,8 +83,8 @@ module Kindergarten
       @child     = child
       @governess = governess
 
-      unless @governess.nil?
-        @governess.instance_eval &self.class.govern_proc
+      unless @governess.nil? || self.class.govern_proc.nil?
+        @governess.instance_eval(&self.class.govern_proc)
       end
     end
 
