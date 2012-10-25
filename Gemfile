@@ -13,6 +13,6 @@ group :development do
     gem 'activerecord-jdbcmysql-adapter'
   end
   platforms :ruby do
-    gem 'mysql2'
+    gem 'mysql2', :git => "git://github.com/brianmario/mysql2.git"
  end
 end
