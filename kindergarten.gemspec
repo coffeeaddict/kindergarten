@@ -19,7 +19,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency('activesupport', ['> 3'])
 
   gem.add_development_dependency('rake')
-  gem.add_development_dependency('rspec', ['~> 2.10'])
-  gem.add_development_dependency('activerecord', ['~> 3.2'])
-  gem.add_development_dependency('sqlite3')
+  gem.add_development_dependency('rspec', ['~> 2.11'])
+  gem.add_development_dependency('activerecord', ['> 3'])
+  gem.add_development_dependency('mysql2')
+  gem.add_development_dependency('jdbc-mysql')
 end
