@@ -58,7 +58,7 @@ describe Kindergarten::ORM::ActiveRecord do
     it "should create a bar" do
       bar = nil
       expect {
-        bar = @sandbox.create_bar( name: "foo", decription: "bar" )
+        bar = @sandbox.create_bar( :name => "Foo", :decription => "A bar" )
       }.to_not raise_error
       
       bar.should be_kind_of(Bar)
@@ -66,19 +66,19 @@ describe Kindergarten::ORM::ActiveRecord do
     
     it "should not create a bar w/o scrubbing" do
       expect {
-        @sandbox.create_bar_wo( name: "foo", decription: "bar" )
+        @sandbox.create_bar_wo( :name => "Foo", :decription => "A Bar" )
       }.to raise_error(Kindergarten::ORM::Unscrubbed)    
     end
     
     it "should protect the Joint" do
       expect {
-        @sandbox.create_joint( name: "foo", decription: "bar" )
+        @sandbox.create_joint( :name => "foo", :decription => "bar" )
       }.to raise_error(Kindergarten::ORM::Unscrubbed)    
     end
     
     it "should build a clean joint" do
       expect {
-        @sandbox.build_joint(name: "clean")
+        @sandbox.build_joint(:name => "clean")
       }.to_not raise_error(Kindergarten::ORM::Unscrubbed)
     end
     
@@ -89,16 +89,16 @@ describe Kindergarten::ORM::ActiveRecord do
     end
     
     it "should update a bar" do
-      bar = @sandbox.create_bar(name: "Whiskey Inn")
+      bar = @sandbox.create_bar(:name => "Whiskey Inn")
       expect {
-        @sandbox.update_bar(bar, name: "Whiskey Out")
+        @sandbox.update_bar(bar, :name => "Whiskey Out")
       }.to_not raise_error(Kindergarten::ORM::Unscrubbed)
     end
     
     it "should not update a dirty bar" do
-      bar = @sandbox.create_bar(name: "Whiskey Inn")
+      bar = @sandbox.create_bar(:name => "Whiskey Inn")
       expect {
-        @sandbox.update_bar_dirty(bar, name: "Whiskey Out")
+        @sandbox.update_bar_dirty(bar, :name => "Whiskey Out")
       }.to raise_error(Kindergarten::ORM::Unscrubbed)
     end    
   end
@@ -111,13 +111,13 @@ describe Kindergarten::ORM::ActiveRecord do
     
     it "should not create a scrubbed restaurant" do
       expect {
-        @sandbox.create_restaurant_scrubbed(name: "China Wok")
+        @sandbox.create_restaurant_scrubbed(:name => "China Wok")
       }.to raise_error(Kindergarten::ORM::Unscrubbed)
     end
     
     it "should create a rinsed restaurant" do
       expect {
-        @sandbox.create_restaurant(name: "Lobster Inn")
+        @sandbox.create_restaurant(:name => "Lobster Inn")
       }.to_not raise_error(Kindergarten::ORM::Unscrubbed)
     end
   end

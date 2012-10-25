@@ -21,7 +21,7 @@ class DrinkingPerimeter < Kindergarten::Perimeter
   
   # should raise Unscrubbed
   def build_dirty_joint
-    Joint.new(name: "dirty")
+    Joint.new(:name => "dirty")
   end
   
   # should not raise Unscrubbed
