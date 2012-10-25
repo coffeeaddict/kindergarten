@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Kindergarten by coffeeaddict</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Kindergarten</h1>
+        <p>A kindergarten for ruby objects to provide Modularity and Security.</p>
+
+        <p class="view"><a href="https://github.com/coffeeaddict/kindergarten">View the Project on GitHub <small>coffeeaddict/kindergarten</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/coffeeaddict/kindergarten/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/coffeeaddict/kindergarten/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/coffeeaddict/kindergarten">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Kindergarten</h1>
+
+<p><a href="http://travis-ci.org/coffeeaddict/kindergarten"><img src="https://secure.travis-ci.org/coffeeaddict/kindergarten.png" alt="Build Status"></a></p>
+
+<p><a href="https://codeclimate.com/github/coffeeaddict/kindergarten"><img src="https://codeclimate.com/badge.png" alt="Code Climate"></a></p>
+
+<p>A way to achieve modularity and modular security with a sandbox on steroids.</p>
+
+<h2>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<pre><code>gem 'kindergarten'
+</code></pre>
+
+<p>And then execute:</p>
+
+<pre><code>$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre><code>$ gem install kindergarten
+</code></pre>
+
+<h2>Usage</h2>
+
+<div class="highlight"><pre><span class="c1"># define a child</span>
+<span class="n">child</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># define a module (perimeter) for the child to play in</span>
+<span class="k">class</span> <span class="nc">MyPlayModule</span> <span class="o">&lt;</span> <span class="no">Kindergarten</span><span class="o">::</span><span class="no">Perimeter</span>
+  <span class="c1"># use can-can rules to govern the perimeter</span>
+  <span class="n">govern</span> <span class="k">do</span> <span class="o">|</span><span class="n">child</span><span class="o">|</span>
+    <span class="n">can</span> <span class="ss">:watch</span><span class="p">,</span> <span class="no">Television</span>
+    <span class="n">cannot</span> <span class="ss">:watch</span><span class="p">,</span> <span class="no">CableTV</span>
+
+    <span class="n">can</span> <span class="ss">:eat</span><span class="p">,</span> <span class="no">Candy</span> <span class="k">do</span> <span class="o">|</span><span class="n">candy</span><span class="o">|</span>
+      <span class="n">child</span><span class="o">.</span><span class="n">quotum</span><span class="o">.</span><span class="n">allows</span><span class="p">(</span><span class="n">candy</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="c1"># define methods for the sandbox</span>
+  <span class="n">sandbox</span> <span class="ss">:watch_tv</span><span class="p">,</span> <span class="ss">:eat</span>
+
+  <span class="k">def</span> <span class="nf">watch_tv</span><span class="p">(</span><span class="n">tv</span><span class="p">)</span>
+    <span class="n">guard</span><span class="p">(</span><span class="ss">:watch</span><span class="p">,</span> <span class="n">tv</span><span class="p">)</span>
+    <span class="n">child</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">tv</span><span class="p">)</span>
+
+    <span class="nb">sleep</span><span class="p">(</span><span class="ss">:four</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">eat</span><span class="p">(</span><span class="n">candy</span><span class="p">)</span>
+    <span class="n">guard</span><span class="p">(</span><span class="ss">:eat</span><span class="p">,</span> <span class="n">candy</span><span class="p">)</span>
+    <span class="n">child</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">candy</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">sleep</span><span class="p">(</span><span class="n">len</span><span class="p">)</span> <span class="c1"># not_accessible_from_outside</span>
+    <span class="n">child</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">len</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># load the child and the module into a sandbox</span>
+<span class="n">sandbox</span> <span class="o">=</span> <span class="no">Kindergarten</span><span class="o">.</span><span class="n">sandbox</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+<span class="n">sandbox</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="no">MyPlayPerimeter</span><span class="p">)</span>
+
+<span class="c1"># you can now call the sandboxed methods on the sandbox</span>
+<span class="n">sandbox</span><span class="o">.</span><span class="n">watch_tv</span><span class="p">(</span><span class="no">CableTV</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>  <span class="c1"># fails with Kindergarten::AccessDenied</span>
+<span class="mi">30</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span>
+  <span class="n">sandbox</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="no">Liquorice</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>   <span class="c1"># fails after a while</span>
+<span class="k">end</span>
+
+<span class="n">sandbox</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="ss">:long</span><span class="p">)</span>           <span class="c1"># fails with NoMethodError</span>
+
+<span class="n">sandbox</span><span class="o">.</span><span class="n">allowed?</span><span class="p">(</span><span class="ss">:watch</span><span class="p">,</span> <span class="no">Television</span><span class="p">)</span>
+<span class="c1"># =&gt; true</span>
+</pre></div>
+
+<p>You are not restricted to only one perimeter/module - that would be most
+boring...</p>
+
+<p>Infact, the above is the essence of things - but there is much much more fun
+hidden inside the Kindergarten. More will follow on the Wiki</p>
+
+<h2>Contributing</h2>
+
+<ol>
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Added some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/coffeeaddict">coffeeaddict</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-9161015-2");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
