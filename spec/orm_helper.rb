@@ -1,4 +1,6 @@
-require 'sqlite3'
+adapter = RUBY_PLATFORM == 'java' ? 'jdbc-mysql' : 'mysql2'
+require adapter
+
 require 'active_record'
 require "kindergarten/orm/governess"
 
@@ -9,7 +11,8 @@ logger.formatter = proc { |severity, datetime, progname, msg|
 
 ActiveRecord::Base.logger = logger
 ActiveRecord::Base.establish_connection(
-  :adapter   => 'sqlite3',
-  :database  => File.expand_path( "../support/db/test.db", __FILE__),
+  :adapter   => adapter,
+  :database  => 'kindergarten_test',
+  :username  => 'root',
+  :encoding  => 'utf8'
 )
-
