@@ -10,6 +10,7 @@ group :development do
   gem "activerecord", "> 3"
   platforms :jruby do
     gem 'jdbc-mysql'
+    gem 'activerecord-jdbcmysql-adapter'
   end
   platforms :ruby do
     gem 'mysql2'

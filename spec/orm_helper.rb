@@ -1,4 +1,4 @@
-adapter = RUBY_PLATFORM == 'java' ? 'jdbc-mysql' : 'mysql2'
+adapter = RUBY_PLATFORM == 'java' ? 'jdbc/mysql' : 'mysql2'
 require adapter
 
 require 'active_record'
@@ -11,7 +11,7 @@ logger.formatter = proc { |severity, datetime, progname, msg|
 
 ActiveRecord::Base.logger = logger
 ActiveRecord::Base.establish_connection(
-  :adapter   => adapter,
+  :adapter   => adapter.gsub('/', ''),
   :database  => 'kindergarten_test',
   :username  => 'root',
   :encoding  => 'utf8'
