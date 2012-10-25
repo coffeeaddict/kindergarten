@@ -14,3 +14,8 @@ rvm:
 services: mysql
 before_script:
   - mysql -e 'create database kindergarten_test;'
+
+branches:
+  only:
+    - master
+    - develop
