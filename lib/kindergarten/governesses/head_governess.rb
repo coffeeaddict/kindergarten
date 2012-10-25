@@ -130,7 +130,7 @@ module Kindergarten
         untaint = untaint_opts[key]
         next if untaint == :pass
 
-        match = value.match(untaint)
+        match = "#{value}".match(untaint)
         if match.nil?
           scrubbed.delete key
         else
