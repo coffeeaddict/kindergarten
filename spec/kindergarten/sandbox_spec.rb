@@ -33,20 +33,38 @@ describe Kindergarten::Sandbox do
       sandbox.perimeter.empty?
     }
   end
-  
+
   describe :HeadGoverness do
     before(:each) do
       @sandbox = Kindergarten::Sandbox.new(:child)
-      @sandbox.extend_perimeter(SpecPerimeter, PuppetPerimeter)      
+      @sandbox.extend_perimeter(SpecPerimeter, PuppetPerimeter)
     end
 
     it "should tell the outside what is allowed" do
       @sandbox.should be_allowed(:view, "string")
     end
-    
+
     it "should know the rules accross perimeters" do
       puppet = @sandbox.grab_puppet
       @sandbox.should be_disallowed(:bbq, puppet)
+    end
+  end
+
+  describe :Loading do
+    before(:each) do
+      @sandbox = Kindergarten::Sandbox.new(:child)
+    end
+
+    it "should not load a module that has no sandboxed methods" do
+      expect {
+        @sandbox.load_module(MethodlessModule)
+      }.to raise_error(Kindergarten::NoExposedMethods)
+    end
+
+    it "should not load a module that has no purpose" do
+      expect {
+        @sandbox.load_module(PurposelessModule)
+      }.to raise_error(Kindergarten::NoPurpose)
     end
   end
 end
