@@ -24,6 +24,8 @@ module Kindergarten
           self.governess
 
         purpose = perimeter_class.purpose || raise(Kindergarten::Perimeter::NoPurpose.new(perimeter_class))
+
+        # TODO: find/create a Purpose and add this perimeter to it
         if perimeter_class.exposed_methods.blank?
           raise Kindergarten::Perimeter::NoExposedMethods.new(perimeter_class)
         end
@@ -61,6 +63,7 @@ module Kindergarten
     end
     alias_method :disallowed?, :disallows?
 
+    # TODO: Find a purpose and call that - move this block to Purpose
     def method_missing(name, *args, &block)
       super
     rescue NoMethodError => ex
