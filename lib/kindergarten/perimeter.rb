@@ -5,7 +5,7 @@ module Kindergarten
   #   class ExamplePerimeter < Kindergarten::Perimeter
   #     purpose :books
   #
-  #     govern do |child|
+  #     govern do
   #       can :read, Book do |book|
   #         book.level <= 2
   #       end

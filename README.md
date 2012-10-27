@@ -29,7 +29,7 @@ child = User.find(2)
 # define a module (perimeter) for the child to play in
 class MyPlayModule < Kindergarten::Perimeter
   # use can-can rules to govern the perimeter
-  govern do |child|
+  govern do
     can :watch, Television
     cannot :watch, CableTV
 

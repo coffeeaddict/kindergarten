@@ -2,7 +2,7 @@ class PuppetPerimeter < Kindergarten::Perimeter
   class Puppet
   end
 
-  govern do |child|
+  govern do
     can [:play_with,:dress,:nappy_change], Puppet
     cannot [:tear, :bbq], Puppet
   end

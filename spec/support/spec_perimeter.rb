@@ -1,7 +1,7 @@
 class SpecPerimeter < Kindergarten::Perimeter
   governess Kindergarten::StrictGoverness
 
-  govern do |child|
+  govern do
     can :view, String
   end
 
