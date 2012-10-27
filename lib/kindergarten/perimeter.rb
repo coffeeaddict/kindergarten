@@ -21,13 +21,29 @@ module Kindergarten
   #
   class Perimeter
     class << self
-      attr_reader :sandboxed_methods, :govern_proc
+      attr_reader :exposed_methods, :govern_proc
 
-      # Define a list of sandbox methods
-      def sandbox(*list)
-        @sandboxed_methods ||= []
-        @sandboxed_methods |= list
+      # Defines a list of sandboxed methods
+      #
+      # Can be called multiple times to grow the list.
+      #
+      # @example
+      #   class BondModule < Kindergarten::Perimeter
+      #     # ...
+      #     expose :m, :q
+      #
+      #     # ...
+      #     expose :enemies
+      #   end
+      #
+      #   BondModule.exposed_methods
+      #   => [ :m, :q, :enemies ]
+      #
+      def expose(*list)
+        @exposed_methods ||= []
+        @exposed_methods |= list
       end
+      alias_method :sandbox, :expose
 
       # Instruct the Governess how to govern this perimeter
       def govern(&proc)
@@ -90,7 +106,7 @@ module Kindergarten
 
     # @return [Array] List of sandbox methods
     def sandbox_methods
-      self.class.sandboxed_methods
+      self.class.exposed_methods
     end
 
     # @see Governess#scrub
