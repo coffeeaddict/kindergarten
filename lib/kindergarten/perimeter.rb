@@ -104,31 +104,15 @@ module Kindergarten
       end
     end
 
+    delegate :scrub, :rinse, :guard, :unguarded,
+      :to => :governess
+
     # @return [Array] List of sandbox methods
     def sandbox_methods
       self.class.exposed_methods
     end
 
-    # @see Governess#scrub
-    def scrub(*args)
-      self.governess.scrub(*args)
-    end
-
-    # @see Governess#rinse
-    def rinse(*args)
-      self.governess.rinse(*args)
-    end
-
-    # @see Governess#guard
-    def guard(action, target)
-      self.governess.guard(action, target)
-    end
-
-    # @see Governess#unguarded
-    def unguarded(&block)
-      self.governess.unguarded(&block)
-    end
-
+    # Perform a block under the watchful eye off the governess
     def governed(method, unguarded=false, &block)
       if unguarded == true
         self.governess.unguarded do
