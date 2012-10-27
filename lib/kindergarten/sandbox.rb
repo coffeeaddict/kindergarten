@@ -25,14 +25,14 @@ module Kindergarten
 
         perimeter = perimeter_class.new(child, governess)
 
-        # the head governess must know all the rules
-        unless governess == self.governess || perimeter_class.govern_proc.nil?
-          self.governess.instance_eval(&perimeter_class.govern_proc)
-        end
-
         raise ArgumentError.new(
           "Module must inherit from Kindergarten::Perimeter"
         ) unless perimeter.kind_of?(Kindergarten::Perimeter)
+
+       # the head governess must know all the rules
+        unless governess == self.governess || perimeter_class.govern_proc.nil?
+          self.governess.instance_eval(&perimeter_class.govern_proc)
+        end
 
         @perimeter << perimeter unless @perimeter.include?(perimeter)
       end
@@ -50,7 +50,7 @@ module Kindergarten
       governess.can?(action, target)
     end
     alias_method :allowed?, :allows?
-    
+
     def disallows?(action, target)
       governess.cannot?(action, target)
     end
