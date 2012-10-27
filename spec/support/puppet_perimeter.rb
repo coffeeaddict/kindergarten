@@ -1,4 +1,6 @@
 class PuppetPerimeter < Kindergarten::Perimeter
+  purpose :puppets
+
   class Puppet
   end
 

@@ -1,4 +1,6 @@
 class SpecPerimeter < Kindergarten::Perimeter
+  purpose :testing
+
   governess Kindergarten::StrictGoverness
 
   govern do
