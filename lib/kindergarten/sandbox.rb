@@ -23,6 +23,11 @@ module Kindergarten
           perimeter_class.governess.new(child) :
           self.governess
 
+        purpose = perimeter_class.purpose || raise(Kindergarten::Perimeter::NoPurpose.new(perimeter_class))
+        if perimeter_class.exposed_methods.blank?
+          raise Kindergarten::Perimeter::NoExposedMethods.new(perimeter_class)
+        end
+
         perimeter = perimeter_class.new(child, governess)
 
         raise ArgumentError.new(

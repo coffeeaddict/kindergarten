@@ -12,19 +12,30 @@ module Kindergarten
     end
   end
 
-  class Kindergarten::NoExposedMethods < RuntimeError
-    def to_s
-      "You tried to load a module which does not call the #sandbox method"
-    end
-  end
-
-  class Kindergarten::NoPurpose < RuntimeError
-    def to_s
-      "You tried to load a module which does not call the #purpose method"
-    end
-  end
 
   class Perimeter
+    class NoExposedMethods < RuntimeError
+      def initialize(perimeter)
+        @perimeter = perimeter
+        super
+      end
+
+      def to_s
+        "The module #{@perimeter.name} does not expose any methods."
+      end
+    end
+
+    class NoPurpose < RuntimeError
+      def initialize(perimeter)
+        @perimeter = perimeter
+        super
+      end
+
+      def to_s
+        "The module #{@perimeter.name} does not have a purpose."
+      end
+    end
+
     # Signals bad sandbox method implementation
     class Unguarded < SecurityError; end
   end

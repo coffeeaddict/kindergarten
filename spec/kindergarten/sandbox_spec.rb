@@ -58,13 +58,13 @@ describe Kindergarten::Sandbox do
     it "should not load a module that has no sandboxed methods" do
       expect {
         @sandbox.load_module(MethodlessModule)
-      }.to raise_error(Kindergarten::NoExposedMethods)
+      }.to raise_error(Kindergarten::Perimeter::NoExposedMethods, /MethodlessModule does not expose any methods/)
     end
 
     it "should not load a module that has no purpose" do
       expect {
         @sandbox.load_module(PurposelessModule)
-      }.to raise_error(Kindergarten::NoPurpose)
+      }.to raise_error(Kindergarten::Perimeter::NoPurpose, /PurposelessModule does not have a purpose/)
     end
   end
 end
