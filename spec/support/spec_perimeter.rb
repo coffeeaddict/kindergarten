@@ -1,7 +1,9 @@
 class SpecPerimeter < Kindergarten::Perimeter
+  purpose :testing
+
   governess Kindergarten::StrictGoverness
 
-  govern do |child|
+  govern do
     can :view, String
   end
 
