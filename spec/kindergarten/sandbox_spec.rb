@@ -83,4 +83,57 @@ describe Kindergarten::Sandbox do
       @sandbox.purpose.should be_kind_of(Hash)
     end
   end
+
+  describe :Mediation do
+    before(:each) do
+      @sandbox = Kindergarten::Sandbox.new(:kid)
+      @sandbox.load_module(SpecPerimeter)
+    end
+
+    describe :subscribe do
+      it "should subscribe the sandbox to events" do
+        evented = false
+        @sandbox.subscribe(:testing, :event) do
+          evented = true
+        end
+
+        expect {
+          @sandbox.testing.fire(:event)
+        }.to change { evented }
+      end
+    end
+
+    describe :unsubscribe do
+      it "should unsubscribe the sandbox from events" do
+        evented = 0
+        @sandbox.subscribe(:testing, :event) do
+          evented += 1
+        end
+
+        expect {
+          @sandbox.testing.fire(:event)
+        }.to change { evented }
+
+        @sanbox.unsubscribe(:testing, :event)
+
+        expect {
+          @sandbox.testing.fire(:event)
+        }.to_not change { evented }
+     end
+    end
+
+    describe :Broadcast do
+      it "should broadcast events" do
+        evented = 0
+        @sandbox.broadcast_publish do |event|
+          evented += 1
+        end
+
+        expect {
+          @sandbox.testing.fire
+        }.to change { evented }
+      end
+    end
+
+  end
 end
