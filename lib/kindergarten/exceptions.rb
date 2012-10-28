@@ -12,8 +12,43 @@ module Kindergarten
     end
   end
 
+  class Sandbox
+    class NoPurposeError < NoMethodError
+      def initialize(purpose, sandbox)
+        @purpose = purpose
+        @sandbox = sandbox
+      end
+
+      def to_s
+        "undefined purpose '#{@purpose}' for #{@sandbox}"
+      end
+    end
+  end
+
   class Perimeter
-    # Signals bad sandbox method implementation  
+    class NoExposedMethods < NoMethodError
+      def initialize(perimeter)
+        @perimeter = perimeter
+        super
+      end
+
+      def to_s
+        "The module #{@perimeter.name} does not expose any methods."
+      end
+    end
+
+    class NoPurpose < ArgumentError
+      def initialize(perimeter)
+        @perimeter = perimeter
+        super
+      end
+
+      def to_s
+        "The module #{@perimeter.name} does not have a purpose."
+      end
+    end
+
+    # Signals bad sandbox method implementation
     class Unguarded < SecurityError; end
   end
 end

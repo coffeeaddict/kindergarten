@@ -5,7 +5,7 @@ module Kindergarten
   #   class ExamplePerimeter < Kindergarten::Perimeter
   #     purpose :books
   #
-  #     govern do |child|
+  #     govern do
   #       can :read, Book do |book|
   #         book.level <= 2
   #       end
@@ -21,13 +21,29 @@ module Kindergarten
   #
   class Perimeter
     class << self
-      attr_reader :sandboxed_methods, :govern_proc
+      attr_reader :exposed_methods, :govern_proc
 
-      # Define a list of sandbox methods
-      def sandbox(*list)
-        @sandboxed_methods ||= []
-        @sandboxed_methods |= list
+      # Defines a list of sandboxed methods
+      #
+      # Can be called multiple times to grow the list.
+      #
+      # @example
+      #   class BondModule < Kindergarten::Perimeter
+      #     # ...
+      #     expose :m, :q
+      #
+      #     # ...
+      #     expose :enemies
+      #   end
+      #
+      #   BondModule.exposed_methods
+      #   => [ :m, :q, :enemies ]
+      #
+      def expose(*list)
+        @exposed_methods ||= []
+        @exposed_methods |= list
       end
+      alias_method :sandbox, :expose
 
       # Instruct the Governess how to govern this perimeter
       def govern(&proc)
@@ -88,31 +104,15 @@ module Kindergarten
       end
     end
 
+    delegate :scrub, :rinse, :guard, :unguarded,
+      :to => :governess
+
     # @return [Array] List of sandbox methods
     def sandbox_methods
-      self.class.sandboxed_methods
+      self.class.exposed_methods
     end
 
-    # @see Governess#scrub
-    def scrub(*args)
-      self.governess.scrub(*args)
-    end
-
-    # @see Governess#rinse
-    def rinse(*args)
-      self.governess.rinse(*args)
-    end
-
-    # @see Governess#guard
-    def guard(action, target)
-      self.governess.guard(action, target)
-    end
-
-    # @see Governess#unguarded
-    def unguarded(&block)
-      self.governess.unguarded(&block)
-    end
-
+    # Perform a block under the watchful eye off the governess
     def governed(method, unguarded=false, &block)
       if unguarded == true
         self.governess.unguarded do

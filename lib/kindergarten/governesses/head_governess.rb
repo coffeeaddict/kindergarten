@@ -4,6 +4,7 @@ module Kindergarten
   #
   class HeadGoverness
     include CanCan::Ability
+    attr_reader :child
 
     def initialize(child)
       @child     = child

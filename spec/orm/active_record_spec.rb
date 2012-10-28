@@ -10,7 +10,7 @@ class Migration < ActiveRecord::Migration
       t.string :street
       t.string :type
     end
-    
+
     create_table :restaurants do |t|
       t.string  :name
       t.text    :description
@@ -30,7 +30,7 @@ end
 
 class Restaurant < ActiveRecord::Base
   include Kindergarten::ORM::Governess
-  
+
   force_rinsed
 end
 
@@ -41,7 +41,7 @@ describe Kindergarten::ORM::ActiveRecord do
       mig.suppress_messages do
         mig.up
       end
-      
+
     rescue => ex
       unless ex.message =~ /already exists/
         $stderr.puts "!!! #{ex.class}: #{ex.message}"
@@ -54,72 +54,72 @@ describe Kindergarten::ORM::ActiveRecord do
       @sandbox = Kindergarten.sandbox(:child)
       @sandbox.extend_perimeter(DrinkingPerimeter)
     end
-  
+
     it "should create a bar" do
       bar = nil
       expect {
-        bar = @sandbox.create_bar( :name => "Foo", :decription => "A bar" )
+        bar = @sandbox.get_drunk.create_bar( :name => "Foo", :decription => "A bar" )
       }.to_not raise_error
-      
+
       bar.should be_kind_of(Bar)
     end
-    
+
     it "should not create a bar w/o scrubbing" do
       expect {
-        @sandbox.create_bar_wo( :name => "Foo", :decription => "A Bar" )
-      }.to raise_error(Kindergarten::ORM::Unscrubbed)    
+        @sandbox.get_drunk.create_bar_wo( :name => "Foo", :decription => "A Bar" )
+      }.to raise_error(Kindergarten::ORM::Unscrubbed)
     end
-    
+
     it "should protect the Joint" do
       expect {
-        @sandbox.create_joint( :name => "foo", :decription => "bar" )
-      }.to raise_error(Kindergarten::ORM::Unscrubbed)    
+        @sandbox.get_drunk.create_joint( :name => "foo", :decription => "bar" )
+      }.to raise_error(Kindergarten::ORM::Unscrubbed)
     end
-    
+
     it "should build a clean joint" do
       expect {
-        @sandbox.build_joint(:name => "clean")
+        @sandbox.get_drunk.build_joint(:name => "clean")
       }.to_not raise_error(Kindergarten::ORM::Unscrubbed)
     end
-    
+
     it "should not build a dirty joint" do
       expect {
-        @sandbox.build_dirty_joint
+        @sandbox.get_drunk.build_dirty_joint
       }.to raise_error(Kindergarten::ORM::Unscrubbed)
     end
-    
+
     it "should update a bar" do
-      bar = @sandbox.create_bar(:name => "Whiskey Inn")
+      bar = @sandbox.get_drunk.create_bar(:name => "Whiskey Inn")
       expect {
-        @sandbox.update_bar(bar, :name => "Whiskey Out")
+        @sandbox.get_drunk.update_bar(bar, :name => "Whiskey Out")
       }.to_not raise_error(Kindergarten::ORM::Unscrubbed)
     end
-    
+
     it "should not update a dirty bar" do
-      bar = @sandbox.create_bar(:name => "Whiskey Inn")
+      bar = @sandbox.get_drunk.create_bar(:name => "Whiskey Inn")
       expect {
-        @sandbox.update_bar_dirty(bar, :name => "Whiskey Out")
+        @sandbox.get_drunk.update_bar_dirty(bar, :name => "Whiskey Out")
       }.to raise_error(Kindergarten::ORM::Unscrubbed)
-    end    
+    end
   end
-  
+
   describe :Dining do
     before(:each) do
       @sandbox = Kindergarten.sandbox(:child)
       @sandbox.extend_perimeter(DiningPerimeter)
     end
-    
+
     it "should not create a scrubbed restaurant" do
       expect {
-        @sandbox.create_restaurant_scrubbed(:name => "China Wok")
+        @sandbox.eating.create_restaurant_scrubbed(:name => "China Wok")
       }.to raise_error(Kindergarten::ORM::Unscrubbed)
     end
-    
+
     it "should create a rinsed restaurant" do
       expect {
-        @sandbox.create_restaurant(:name => "Lobster Inn")
+        @sandbox.eating.create_restaurant(:name => "Lobster Inn")
       }.to_not raise_error(Kindergarten::ORM::Unscrubbed)
     end
   end
-    
+
 end
