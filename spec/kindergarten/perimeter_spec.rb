@@ -64,28 +64,28 @@ describe Kindergarten::Perimeter do
     end
 
     it "should have the sandboxed method" do
-      @sandbox.sandboxed.should eq "child"
+      @sandbox.testing.sandboxed.should eq "child"
     end
 
     it "should have the guarded method" do
       expect {
-        @sandbox.guarded
+        @sandbox.testing.guarded
       }.to raise_error(Kindergarten::AccessDenied)
     end
 
     it "should not have the unboxed method" do
       expect {
-        @sanbox.unboxed
+        @sanbox.testing.unboxed
       }.to raise_error(NoMethodError)
     end
 
     it "should have the not_guarded method" do
-      @sandbox.not_guarded.should eq "OK"
+      @sandbox.testing.not_guarded.should eq "OK"
     end
 
     it "should have the unsafe method" do
       expect {
-        @sandbox.unsafe
+        @sandbox.testing.unsafe
       }.to raise_error(Kindergarten::Perimeter::Unguarded)
     end
   end
@@ -99,7 +99,7 @@ describe Kindergarten::Perimeter do
     it "should allow the unsafe method" do
       expect {
         @sandbox.unguarded do
-          @sandbox.unsafe
+          @sandbox.testing.unsafe
         end
       }.to_not raise_error(Kindergarten::Perimeter::Unguarded)
     end
@@ -107,7 +107,7 @@ describe Kindergarten::Perimeter do
     it "should allow the not_guarded method" do
       expect {
         @sandbox.unguarded do
-          @sandbox.not_guarded
+          @sandbox.testing.not_guarded
         end
       }.to_not raise_error(Kindergarten::Perimeter::Unguarded)
     end

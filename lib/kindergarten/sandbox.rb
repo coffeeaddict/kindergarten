@@ -1,12 +1,13 @@
 module Kindergarten
   class Sandbox
-    attr_reader :child, :governess, :perimeter
+    attr_reader :child, :governess, :perimeter, :purpose
 
     def initialize(child)
       @child     = child
       @governess = Kindergarten::HeadGoverness.new(child)
 
-      @perimeter   = []
+      @purpose   = {}
+      @perimeter = []
       def @perimeter.include?(other)
         (self.collect(&:class) & [ other.class ]).any?
       end
@@ -23,20 +24,15 @@ module Kindergarten
           perimeter_class.governess.new(child) :
           self.governess
 
-        purpose = perimeter_class.purpose || raise(Kindergarten::Perimeter::NoPurpose.new(perimeter_class))
-
-        # TODO: find/create a Purpose and add this perimeter to it
-        if perimeter_class.exposed_methods.blank?
-          raise Kindergarten::Perimeter::NoExposedMethods.new(perimeter_class)
-        end
-
         perimeter = perimeter_class.new(child, governess)
 
         raise ArgumentError.new(
           "Module must inherit from Kindergarten::Perimeter"
         ) unless perimeter.kind_of?(Kindergarten::Perimeter)
 
-       # the head governess must know all the rules
+        self.extend_purpose(perimeter.class, perimeter)
+
+        # the head governess must know all the rules
         unless governess == self.governess || perimeter_class.govern_proc.nil?
           self.governess.instance_eval(&perimeter_class.govern_proc)
         end
@@ -47,10 +43,24 @@ module Kindergarten
     alias_method :load_perimeter, :extend_perimeter
     alias_method :load_module, :extend_perimeter
 
+    def extend_purpose(perimeter, instance)
+      name = perimeter.purpose || raise(
+        Kindergarten::Perimeter::NoPurpose.new(perimeter)
+      )
+      name = name.to_sym
+
+      self.purpose[name] ||= Kindergarten::Purpose.new(name, self)
+      self.purpose[name].add_perimeter(perimeter, instance)
+    end
+
     def unguarded(&block)
       @unguarded = true
       yield
       @unguarded = false
+    end
+
+    def unguarded?
+      @unguarded == true ? true : false
     end
 
     def allows?(action, target)
@@ -66,17 +76,13 @@ module Kindergarten
     # TODO: Find a purpose and call that - move this block to Purpose
     def method_missing(name, *args, &block)
       super
+
     rescue NoMethodError => ex
-      @perimeter.each do |perimeter|
-        if perimeter.sandbox_methods.include?(name)
-          return perimeter.governed(name, @unguarded) do
-            perimeter.send(name, *args, &block)
-          end
-        end
+      unless purpose.has_key?(name)
+        raise Kindergarten::Sandbox::NoPurposeError.new(name, self)
       end
 
-      # still here? then there is no part of the perimeter that provides method
-      raise ex
+      return purpose[name]
     end
   end
 end

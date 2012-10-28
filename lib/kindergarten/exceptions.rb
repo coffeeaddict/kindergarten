@@ -12,9 +12,21 @@ module Kindergarten
     end
   end
 
+  class Sandbox
+    class NoPurposeError < NoMethodError
+      def initialize(purpose, sandbox)
+        @purpose = purpose
+        @sandbox = sandbox
+      end
+
+      def to_s
+        "undefined purpose '#{@purpose}' for #{@sandbox}"
+      end
+    end
+  end
 
   class Perimeter
-    class NoExposedMethods < RuntimeError
+    class NoExposedMethods < NoMethodError
       def initialize(perimeter)
         @perimeter = perimeter
         super
@@ -25,7 +37,7 @@ module Kindergarten
       end
     end
 
-    class NoPurpose < RuntimeError
+    class NoPurpose < ArgumentError
       def initialize(perimeter)
         @perimeter = perimeter
         super
