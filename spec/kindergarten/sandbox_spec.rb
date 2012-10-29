@@ -33,20 +33,54 @@ describe Kindergarten::Sandbox do
       sandbox.perimeter.empty?
     }
   end
-  
+
   describe :HeadGoverness do
     before(:each) do
       @sandbox = Kindergarten::Sandbox.new(:child)
-      @sandbox.extend_perimeter(SpecPerimeter, PuppetPerimeter)      
+      @sandbox.extend_perimeter(SpecPerimeter, PuppetPerimeter)
     end
 
     it "should tell the outside what is allowed" do
       @sandbox.should be_allowed(:view, "string")
     end
-    
+
     it "should know the rules accross perimeters" do
-      puppet = @sandbox.grab_puppet
+      puppet = @sandbox.puppets.grab_puppet
       @sandbox.should be_disallowed(:bbq, puppet)
+    end
+  end
+
+  describe :Loading do
+    before(:each) do
+      @sandbox = Kindergarten::Sandbox.new(:child)
+    end
+
+    it "should not load a module that has no sandboxed methods" do
+      expect {
+        @sandbox.load_module(MethodlessModule)
+      }.to raise_error(Kindergarten::Perimeter::NoExposedMethods, /MethodlessModule does not expose any methods/)
+    end
+
+    it "should not load a module that has no purpose" do
+      expect {
+        @sandbox.load_module(PurposelessModule)
+      }.to raise_error(Kindergarten::Perimeter::NoPurpose, /PurposelessModule does not have a purpose/)
+    end
+  end
+
+  describe :Purpose do
+    before(:each) do
+      @sandbox = Kindergarten::Sandbox.new(:kid)
+    end
+
+    it "should raise error for wrong purpose" do
+      expect {
+        @sandbox.empty.something
+      }.to raise_error(Kindergarten::Sandbox::NoPurposeError)
+    end
+
+    it "should return a hash of purposes" do
+      @sandbox.purpose.should be_kind_of(Hash)
     end
   end
 end

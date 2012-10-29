@@ -2,11 +2,7 @@
 
 ## Code
 
-* Consider ```sandbox.projects.all``` -> ```sandbox.$purpose.$method```
-
-## Travis
-
-* Switch to mysql for testing jrubies
+* Further implement ```sandbox.projects.all``` -> ```sandbox.$purpose.$method```
 
 ## Documentation
 
