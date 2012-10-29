@@ -5,6 +5,7 @@ gem "cancan", "~> 1.6.8"
 gem "activesupport", "> 3"
 
 group :development do
+  gem "bundler", "~> 1.2"
   gem "rake"
   gem "rspec", '~> 2.11'
   gem "activerecord", "> 3"
