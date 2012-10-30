@@ -61,7 +61,7 @@ describe Kindergarten::Perimeter do
     end
 
     it "should have the SpecPerimeter" do
-      @sandbox.perimeter.collect(&:class).should include(SpecPerimeter)
+      @sandbox.perimeters.collect(&:class).should include(SpecPerimeter)
     end
 
     it "should fill the governess" do

@@ -1,22 +1,24 @@
 module Kindergarten
   class Sandbox
-    attr_reader :child, :governess, :perimeter, :purpose
+    attr_reader :child, :governess, :perimeters, :purpose
 
     def initialize(child)
       @child     = child
       @governess = Kindergarten::HeadGoverness.new(child)
 
-      @purpose   = {}
-      @perimeter = []
-      def @perimeter.include?(other)
-        (self.collect(&:class) & [ other.class ]).any?
-      end
+      @purpose    = {}
+      @perimeters = []
 
       @unguarded = false
     end
 
     def extend_perimeter(*perimeter_classes)
       perimeter_classes.each do |perimeter_class|
+        if @perimeters.collect(&:class).include?(perimeter_class)
+          # already have this one
+          return
+        end
+
         # if the perimeter specifies a governess, use that - otherwise appoint
         # the head governess
         child     = self.child
@@ -37,7 +39,7 @@ module Kindergarten
           self.governess.instance_eval(&perimeter_class.govern_proc)
         end
 
-        @perimeter << perimeter unless @perimeter.include?(perimeter)
+        @perimeters << perimeter
       end
     end
     alias_method :load_perimeter, :extend_perimeter
