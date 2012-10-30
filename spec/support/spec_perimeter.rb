@@ -7,6 +7,11 @@ class SpecPerimeter < Kindergarten::Perimeter
     can :view, String
   end
 
+  subscribe :dining, :eat, :evented
+  subscribe :puppets, :dress, ->(event) {
+    @dressed = true
+  }
+
   # should pass and return the child
   def sandboxed
     guard(:view, child)
@@ -31,6 +36,19 @@ class SpecPerimeter < Kindergarten::Perimeter
   # should raise Unguarded
   def unsafe
     return child.reverse
+  end
+
+  # happens on dining.eat event
+  def evented
+    @evented = true
+  end
+
+  def evented?
+    @evented == true ? true : false
+  end
+
+  def puppet_dressed?
+    @dressed == true ? true : false
   end
 
   sandbox :sandboxed, :not_guarded, :guarded, :unsafe

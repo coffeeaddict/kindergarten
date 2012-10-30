@@ -14,7 +14,7 @@ class PuppetPerimeter < Kindergarten::Perimeter
   end
 
   def play_puppet(puppet, action)
-    guard(:action, puppet)
+    guard(action, puppet)
   end
 
   sandbox :grab_puppet, :play_puppet

@@ -20,7 +20,7 @@ describe Kindergarten::Sandbox do
 
   it "should define an empty perimeter" do
     sandbox = Kindergarten::Sandbox.new(:child)
-    sandbox.perimeter.should be_empty
+    sandbox.perimeters.should be_empty
   end
 
   it "should provide a extend_perimeter function" do
@@ -30,7 +30,7 @@ describe Kindergarten::Sandbox do
     expect {
       sandbox.extend_perimeter(SpecPerimeter)
     }.to change {
-      sandbox.perimeter.empty?
+      sandbox.perimeters.empty?
     }
   end
 
@@ -114,7 +114,7 @@ describe Kindergarten::Sandbox do
           @sandbox.testing.fire(:event)
         }.to change { evented }
 
-        @sanbox.unsubscribe(:testing, :event)
+        @sandbox.unsubscribe(:testing, :event)
 
         expect {
           @sandbox.testing.fire(:event)
@@ -125,12 +125,13 @@ describe Kindergarten::Sandbox do
     describe :Broadcast do
       it "should broadcast events" do
         evented = 0
-        @sandbox.broadcast_publish do |event|
+
+        @sandbox.broadcast do |event|
           evented += 1
         end
 
         expect {
-          @sandbox.testing.fire
+          @sandbox.testing.fire(:ce_ci_nest_pas_un_event)
         }.to change { evented }
       end
     end

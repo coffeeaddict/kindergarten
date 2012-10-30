@@ -83,6 +83,10 @@ module Kindergarten
         @callbacks[purpose][event] ||= []
         @callbacks[purpose][event] << block
       end
+
+      def subscriptions
+        @callbacks ||= {}
+      end
     end
 
     attr_reader :child, :governess

@@ -75,6 +75,38 @@ module Kindergarten
     end
     alias_method :disallowed?, :disallows?
 
+    def subscribe(purpose_name, *events, &block)
+      unless (purpose = @purpose[purpose_name.to_sym])
+        warn "No such purpose has been loaded: #{purpose_name}"
+        return
+      end
+
+      events.each do |event|
+        purpose._subscribe(event, &block)
+      end
+    end
+
+    def unsubscribe(purpose_name, *events)
+      unless (purpose = @purpose[purpose_name.to_sym])
+        warn "No such purpose has been loaded: #{purpose_name}"
+        return
+      end
+
+      events.each do |event|
+        purpose._unsubscribe(event)
+      end
+    end
+
+    def broadcast(&block)
+      @broadcast = block
+    end
+
+    def broadcast!(event)
+      return if @broadcast.nil?
+
+      @broadcast.call(event)
+    end
+
     # TODO: Find a purpose and call that - move this block to Purpose
     def method_missing(name, *args, &block)
       super

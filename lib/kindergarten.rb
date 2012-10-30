@@ -4,6 +4,7 @@ require 'active_support/core_ext'
 require "kindergarten/version"
 require "kindergarten/sandbox"
 require "kindergarten/purpose"
+require "kindergarten/event"
 require "kindergarten/perimeter"
 require "kindergarten/governesses"
 require "kindergarten/exceptions"
