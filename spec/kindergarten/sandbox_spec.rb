@@ -66,6 +66,19 @@ describe Kindergarten::Sandbox do
         @sandbox.load_module(PurposelessModule)
       }.to raise_error(Kindergarten::Perimeter::NoPurpose, /PurposelessModule does not have a purpose/)
     end
+
+    it "should take on all subscriptions" do
+      Kindergarten::Purpose.stubs(:_subscribe)
+
+      @sandbox.load_module(PuppetPerimeter)
+      purpose = @sandbox.purpose[:puppets]
+      purpose.should_not be_nil
+
+      # when we load the testing module, it subscribes to puppet play
+      purpose.expects(:_subscribe)
+
+      @sandbox.load_module(SpecPerimeter)
+    end
   end
 
   describe :Purpose do

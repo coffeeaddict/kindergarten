@@ -51,5 +51,5 @@ class SpecPerimeter < Kindergarten::Perimeter
     @dressed == true ? true : false
   end
 
-  sandbox :sandboxed, :not_guarded, :guarded, :unsafe
+  sandbox :sandboxed, :not_guarded, :guarded, :unsafe, :evented
 end

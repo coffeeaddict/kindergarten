@@ -39,6 +39,22 @@ module Kindergarten
           self.governess.instance_eval(&perimeter_class.govern_proc)
         end
 
+        perimeter_class.subscriptions.each do |purpose, events|
+          $stderr.puts purpose
+          if self.purpose[purpose].nil?
+            warn "#{perimeter_class} has subscriptions on un-loaded purpose: #{purpose}"
+            next
+          end
+
+          events.each do |event, blocks|
+            $stderr.puts "\t#{event}"
+
+            blocks.each do |block|
+              self.purpose[purpose]._subscribe(event, block)
+            end
+          end
+        end
+
         @perimeters << perimeter
       end
     end

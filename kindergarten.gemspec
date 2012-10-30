@@ -21,6 +21,7 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency('rake')
   gem.add_development_dependency('rspec', ['~> 2.11'])
+  gem.add_development_dependency('mocha')
   gem.add_development_dependency('activerecord', ['> 3'])
   gem.add_development_dependency('mysql2')
   gem.add_development_dependency('jdbc-mysql')

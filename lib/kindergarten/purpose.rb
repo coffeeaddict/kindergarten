@@ -20,19 +20,17 @@ module Kindergarten
       end
 
       perimeter.exposed_methods.each do |name|
-        if @methods.has_key?(name) || RESTRICTED_METHOD_NAMES.include?(name)
+        if RESTRICTED_METHOD_NAMES.include?(name)
+          raise(
+            Kindergarten::Perimeter::RestrictedMethodError.new(perimeter, name)
+          )
+
+        elsif @methods.has_key?(name)
+
           warn "WARNING: overriding already sandboxed method #{@name}.#{name}"
         end
 
         @methods[name] = instance
-      end
-
-      if (subscriptions = perimeter.subscriptions[self.name])
-        subscriptions.each do |event, blocks|
-          blocks && blocks.each do |block|
-            _subscribe(event, &block)
-          end
-        end
       end
     end
 
