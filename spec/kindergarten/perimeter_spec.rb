@@ -19,8 +19,13 @@ describe Kindergarten::Perimeter do
       SpecPerimeter.govern_proc.should be_kind_of(Proc)
     end
 
-    it "should return a governess"
-    it "should return a purpose"
+    it "should return a governess" do
+      SpecPerimeter.governess.should_not be_nil
+    end
+
+    it "should return a purpose" do
+      SpecPerimeter.purpose.should_not be_nil
+    end
   end
 
   describe :instance do
