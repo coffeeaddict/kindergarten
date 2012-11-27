@@ -7,9 +7,9 @@ class SpecPerimeter < Kindergarten::Perimeter
     can :view, String
   end
 
-  subscribe :dining, :eat, :evented
-  subscribe :puppets, :dress, ->(event) {
-    @dressed = true
+  subscribe :eating, :eat, :evented
+  subscribe :puppets, :play, ->(event, purpose) {
+    purpose.sandbox.testing.dress!
   }
 
   # should pass and return the child
@@ -47,9 +47,17 @@ class SpecPerimeter < Kindergarten::Perimeter
     @evented == true ? true : false
   end
 
+  expose :dress!
+  def dress!
+    unguarded
+    @dressed = true
+  end
+
   def puppet_dressed?
+    unguarded
     @dressed == true ? true : false
   end
 
   sandbox :sandboxed, :not_guarded, :guarded, :unsafe, :evented
+  expose :puppet_dressed?
 end
