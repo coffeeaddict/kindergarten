@@ -8,7 +8,7 @@ class SpecPerimeter < Kindergarten::Perimeter
   end
 
   subscribe :eating, :eat, :evented
-  subscribe :puppets, :play, ->(event, purpose) {
+  subscribe :puppets, :play, lambda { |event, purpose|
     purpose.sandbox.testing.dress!
   }
 
