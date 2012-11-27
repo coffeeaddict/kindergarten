@@ -45,8 +45,14 @@ describe Kindergarten::Sandbox do
     end
 
     it "should know the rules accross perimeters" do
-      puppet = @sandbox.puppets.grab_puppet
+      puppet = @sandbox.puppets.grab
       @sandbox.should be_disallowed(:bbq, puppet)
+    end
+
+    it "should guard the entire sandbox" do
+      expect {
+        @sandbox.guard(:render, :nothing)
+      }.to raise_error(Kindergarten::AccessDenied)
     end
   end
 
@@ -98,9 +104,16 @@ describe Kindergarten::Sandbox do
   end
 
   describe :Mediation do
+    before(:all) do
+      Kindergarten.warnings = true
+    end
+    after(:all) do
+      Kindergarten.warnings = false
+    end
+
     before(:each) do
       @sandbox = Kindergarten::Sandbox.new(:kid)
-      @sandbox.load_module(SpecPerimeter)
+      @sandbox.load_module(PuppetPerimeter, DiningPerimeter, SpecPerimeter)
     end
 
     describe :subscribe do
@@ -113,6 +126,14 @@ describe Kindergarten::Sandbox do
         expect {
           @sandbox.testing.fire(:event)
         }.to change { evented }
+      end
+
+      it "should relay events between purposes" do
+        expect {
+          @sandbox.puppets.play(:dress, @sandbox.puppets.grab)
+        }.to change {
+          @sandbox.testing.puppet_dressed?
+        }
       end
     end
 
