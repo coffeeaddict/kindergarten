@@ -88,6 +88,12 @@ module Kindergarten
     end
     alias_method :disallowed?, :disallows?
 
+    def guard(action, target, opts={})
+      unless allows?(action, target)
+        raise Kindergarten::AccessDenied.new(action, target, opts)
+      end
+    end
+
     def subscribe(purpose_name, *events, &block)
       unless (purpose = @purpose[purpose_name.to_sym])
         Kindergarten.warning "No such purpose has been loaded: #{purpose_name}"
