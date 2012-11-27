@@ -26,7 +26,7 @@ module Kindergarten
           perimeter_class.governess.new(child) :
           self.governess
 
-        perimeter = perimeter_class.new(child, governess)
+        perimeter = perimeter_class.new(self, governess)
 
         raise ArgumentError.new(
           "Module must inherit from Kindergarten::Perimeter"
