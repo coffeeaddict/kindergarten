@@ -48,7 +48,7 @@ module Kindergarten
 
       if @subscriptions.has_key?(event_name)
         @subscriptions[event_name].each do |proc|
-          proc.call(event)
+          proc.call(event, self)
         end
       end
 
