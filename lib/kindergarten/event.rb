@@ -24,7 +24,9 @@ module Kindergarten
     end
 
     def to_json
-      Rufus::Json.encode(name: @name, purpose: @purpose, payload: @payload)
+      Rufus::Json.encode(
+        :name => @name, :purpose => @purpose, :payload => @payload
+      )
     end
   end
 end
