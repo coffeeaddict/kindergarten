@@ -135,5 +135,14 @@ module Kindergarten
       end
     end
 
+    def fire(event, payload=nil)
+      if @sandbox.nil?
+        Kindergarten.warning("There is no sandbox, is this a test-perimeter?")
+        return
+      end
+
+      @sandbox.purpose[self.class.purpose].fire(event, payload)
+    end
+
   end
 end
