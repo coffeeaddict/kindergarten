@@ -2,7 +2,9 @@
 
 ## Code
 
-* Further implement ```sandbox.projects.all``` -> ```sandbox.$purpose.$method```
+* Provide railties
+* Provide rake tasks to create 'app/modules/xyz.rb' and
+  'spec/modules/xyz_spec.rb'
 
 ## Documentation
 

@@ -20,7 +20,7 @@ describe Kindergarten::Sandbox do
 
   it "should define an empty perimeter" do
     sandbox = Kindergarten::Sandbox.new(:child)
-    sandbox.perimeter.should be_empty
+    sandbox.perimeters.should be_empty
   end
 
   it "should provide a extend_perimeter function" do
@@ -30,7 +30,7 @@ describe Kindergarten::Sandbox do
     expect {
       sandbox.extend_perimeter(SpecPerimeter)
     }.to change {
-      sandbox.perimeter.empty?
+      sandbox.perimeters.empty?
     }
   end
 
@@ -45,8 +45,14 @@ describe Kindergarten::Sandbox do
     end
 
     it "should know the rules accross perimeters" do
-      puppet = @sandbox.puppets.grab_puppet
+      puppet = @sandbox.puppets.grab
       @sandbox.should be_disallowed(:bbq, puppet)
+    end
+
+    it "should guard the entire sandbox" do
+      expect {
+        @sandbox.guard(:render, :nothing)
+      }.to raise_error(Kindergarten::AccessDenied)
     end
   end
 
@@ -66,6 +72,19 @@ describe Kindergarten::Sandbox do
         @sandbox.load_module(PurposelessModule)
       }.to raise_error(Kindergarten::Perimeter::NoPurpose, /PurposelessModule does not have a purpose/)
     end
+
+    it "should take on all subscriptions" do
+      Kindergarten::Purpose.stubs(:_subscribe)
+
+      @sandbox.load_module(PuppetPerimeter)
+      purpose = @sandbox.purpose[:puppets]
+      purpose.should_not be_nil
+
+      # when we load the testing module, it subscribes to puppet play
+      purpose.expects(:_subscribe)
+
+      @sandbox.load_module(SpecPerimeter)
+    end
   end
 
   describe :Purpose do
@@ -82,5 +101,74 @@ describe Kindergarten::Sandbox do
     it "should return a hash of purposes" do
       @sandbox.purpose.should be_kind_of(Hash)
     end
+  end
+
+  describe :Mediation do
+    before(:all) do
+      Kindergarten.warnings = true
+    end
+    after(:all) do
+      Kindergarten.warnings = false
+    end
+
+    before(:each) do
+      @sandbox = Kindergarten::Sandbox.new(:kid)
+      @sandbox.load_module(PuppetPerimeter, DiningPerimeter, SpecPerimeter)
+    end
+
+    describe :subscribe do
+      it "should subscribe the sandbox to events" do
+        evented = false
+        @sandbox.subscribe(:testing, :event) do
+          evented = true
+        end
+
+        expect {
+          @sandbox.testing.fire(:event)
+        }.to change { evented }
+      end
+
+      it "should relay events between purposes" do
+        expect {
+          @sandbox.puppets.play(:dress, @sandbox.puppets.grab)
+        }.to change {
+          @sandbox.testing.puppet_dressed?
+        }
+      end
+    end
+
+    describe :unsubscribe do
+      it "should unsubscribe the sandbox from events" do
+        evented = 0
+        @sandbox.subscribe(:testing, :event) do
+          evented += 1
+        end
+
+        expect {
+          @sandbox.testing.fire(:event)
+        }.to change { evented }
+
+        @sandbox.unsubscribe(:testing, :event)
+
+        expect {
+          @sandbox.testing.fire(:event)
+        }.to_not change { evented }
+     end
+    end
+
+    describe :Broadcast do
+      it "should broadcast events" do
+        evented = 0
+
+        @sandbox.broadcast do |event|
+          evented += 1
+        end
+
+        expect {
+          @sandbox.testing.fire(:ce_ci_nest_pas_un_event)
+        }.to change { evented }
+      end
+    end
+
   end
 end

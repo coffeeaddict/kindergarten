@@ -9,13 +9,14 @@ class PuppetPerimeter < Kindergarten::Perimeter
     cannot [:tear, :bbq], Puppet
   end
 
-  def grab_puppet
+  def grab
     guard(:play_with, Puppet.new)
   end
 
-  def play_puppet(puppet, action)
-    guard(:action, puppet)
+  def play(action, puppet)
+    guard(action, puppet)
+    fire(:play, [action, puppet])
   end
 
-  sandbox :grab_puppet, :play_puppet
+  sandbox :grab, :play
 end

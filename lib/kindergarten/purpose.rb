@@ -3,11 +3,15 @@ module Kindergarten
   class Purpose
     attr_reader :name, :methods, :sandbox, :subscriptions
 
+    RESTRICTED_METHOD_NAMES = [ :_subscribe, :fire, :add_perimeter,
+      :initialize,
+    ]
+
     def initialize(name, sandbox)
       @name          = name
       @sandbox       = sandbox
       @methods       = {}
-      @subscriptions = []
+      @subscriptions = {}
     end
 
     def add_perimeter(perimeter, instance)
@@ -16,12 +20,39 @@ module Kindergarten
       end
 
       perimeter.exposed_methods.each do |name|
-        if @methods.has_key?(name)
-          warn "WARNING: overriding already sandboxed method #{@name}.#{name}"
+        if RESTRICTED_METHOD_NAMES.include?(name)
+          raise(
+            Kindergarten::Perimeter::RestrictedMethodError.new(perimeter, name)
+          )
+
+        elsif @methods.has_key?(name)
+
+          Kindergarten.warning "overriding already sandboxed method #{@name}.#{name}"
         end
 
         @methods[name] = instance
       end
+    end
+
+    def _subscribe(event, &block)
+      @subscriptions[event] ||= []
+      @subscriptions[event] << block
+    end
+
+    def _unsubscribe(event)
+      @subscriptions.delete(event)
+    end
+
+    def fire(event_name, payload=nil)
+      event = Kindergarten::Event.new(event_name, self.name, payload)
+
+      if @subscriptions.has_key?(event_name)
+        @subscriptions[event_name].each do |proc|
+          proc.call(event, self)
+        end
+      end
+
+      self.sandbox.broadcast!(event)
     end
 
     def method_missing(name, *args, &block)
