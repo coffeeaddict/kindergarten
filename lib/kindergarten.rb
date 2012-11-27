@@ -16,9 +16,11 @@ module Kindergarten
       Kindergarten::Sandbox.new(child)
     end
 
-    def warn(msg)
+    def warning(msg)
       return if @warnings == false
-      warn(msg)
+      return warning("Empty warning message") if msg.nil?
+
+      warn("WARNING: #{msg}")
     end
   end
 end

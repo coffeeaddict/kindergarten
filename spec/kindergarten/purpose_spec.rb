@@ -20,12 +20,18 @@ describe Kindergarten::Purpose do
     purpose = Kindergarten::Purpose.new(:test, @sandbox)
     purpose.add_perimeter(SpecPerimeter, SpecPerimeter.instance(:child))
 
+    prev = $stderr.dup
     $stderr = StringIO.new
+    Kindergarten.warnings = true
+
     expect {
       purpose.add_perimeter(SpecPerimeter, SpecPerimeter.instance(:child))
     }.to change {
       $stderr.length
     }
+
+    $stderr = prev
+    Kindergarten.warnings = false
   end
 
   it "should fail on restricted methods" do

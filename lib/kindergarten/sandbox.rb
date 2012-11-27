@@ -40,17 +40,14 @@ module Kindergarten
         end
 
         perimeter_class.subscriptions.each do |purpose, events|
-          $stderr.puts purpose
           if self.purpose[purpose].nil?
-            warn "#{perimeter_class} has subscriptions on un-loaded purpose: #{purpose}"
+            Kindergarten.warning "#{perimeter_class} has subscriptions on un-loaded purpose :#{purpose}"
             next
           end
 
           events.each do |event, blocks|
-            $stderr.puts "\t#{event}"
-
             blocks.each do |block|
-              self.purpose[purpose]._subscribe(event, block)
+              self.purpose[purpose]._subscribe(event, &block)
             end
           end
         end
@@ -93,7 +90,7 @@ module Kindergarten
 
     def subscribe(purpose_name, *events, &block)
       unless (purpose = @purpose[purpose_name.to_sym])
-        warn "No such purpose has been loaded: #{purpose_name}"
+        Kindergarten.warning "No such purpose has been loaded: #{purpose_name}"
         return
       end
 
@@ -104,7 +101,7 @@ module Kindergarten
 
     def unsubscribe(purpose_name, *events)
       unless (purpose = @purpose[purpose_name.to_sym])
-        warn "No such purpose has been loaded: #{purpose_name}"
+        Kindergarten.warning "No such purpose has been loaded: #{purpose_name}"
         return
       end
 

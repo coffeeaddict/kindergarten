@@ -27,7 +27,7 @@ module Kindergarten
 
         elsif @methods.has_key?(name)
 
-          warn "WARNING: overriding already sandboxed method #{@name}.#{name}"
+          Kindergarten.warning "overriding already sandboxed method #{@name}.#{name}"
         end
 
         @methods[name] = instance
