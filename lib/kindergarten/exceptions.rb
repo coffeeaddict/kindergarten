@@ -48,6 +48,17 @@ module Kindergarten
       end
     end
 
+    class RestrictedMethodError < ArgumentError
+      def initialize(perimeter, method)
+        @perimeter = perimeter
+        @method    = method
+      end
+
+      def to_s
+        "You exposed '#{method}' on the #{perimeter}, but that is a restricted method"
+      end
+    end
+
     # Signals bad sandbox method implementation
     class Unguarded < SecurityError; end
   end

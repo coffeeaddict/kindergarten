@@ -91,10 +91,16 @@ module Kindergarten
     def scrub(attributes, *list)
       list.map!(&:to_sym)
 
+      if attributes.respond_to?(:symbolize_keys!)
+        attributes.symbolize_keys!
+      else
+        attributes = attributes.symbolize_keys
+      end
+
       forbidden = Kindergarten::Governesses.forbidden_keys
 
       Kindergarten::ScrubbedHash[
-        attributes.symbolize_keys!.delete_if do |key,value|
+        attributes.delete_if do |key,value|
           forbidden.include?(key) || !list.include?(key)
         end
       ]
