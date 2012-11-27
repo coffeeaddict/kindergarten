@@ -83,9 +83,13 @@ module Kindergarten
         @callbacks[purpose][event] ||= []
         @callbacks[purpose][event] << block
       end
+
+      def subscriptions
+        @callbacks ||= {}
+      end
     end
 
-    attr_reader :child, :governess
+    attr_reader :child, :governess, :sandbox
 
     # Obtain an un-sandboxed instance for testing purposes
     #
@@ -95,8 +99,14 @@ module Kindergarten
       self.new(child, governess)
     end
 
-    def initialize(child, governess)
-      @child     = child
+    def initialize(sandbox, governess)
+      if sandbox.is_a? Kindergarten::Sandbox
+        @sandbox   = sandbox
+        @child     = sandbox.child
+      else
+        @child = sandbox
+      end
+
       @governess = governess
 
       unless @governess.nil? || self.class.govern_proc.nil?
@@ -123,6 +133,15 @@ module Kindergarten
         self.governess.governed(method, &block)
 
       end
+    end
+
+    def fire(event, payload=nil)
+      if @sandbox.nil?
+        Kindergarten.warning("There is no sandbox, is this a test-perimeter?")
+        return
+      end
+
+      @sandbox.purpose[self.class.purpose].fire(event, payload)
     end
 
   end
