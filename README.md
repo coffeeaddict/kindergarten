@@ -28,6 +28,9 @@ child = User.find(2)
 
 # define a module (perimeter) for the child to play in
 class MyPlayModule < Kindergarten::Perimeter
+  # every module must have a purpose, it is it's namespace
+  purpose :playing
+
   # use can-can rules to govern the perimeter
   govern do
     can :watch, Television
@@ -38,8 +41,8 @@ class MyPlayModule < Kindergarten::Perimeter
     end
   end
 
-  # define methods for the sandbox
-  sandbox :watch_tv, :eat
+  # define exposed methods
+  expose :watch_tv, :eat
 
   def watch_tv(tv)
     guard(:watch, tv)
@@ -56,21 +59,28 @@ class MyPlayModule < Kindergarten::Perimeter
   def sleep(len) # not_accessible_from_outside
     child.sleep(len)
   end
+
+  # or expose methods in an 'annotation like way'
+
+  expose :method
+  # method that does nothing at all
+  def method
+  end
 end
 
-# load the child and the module into a sandbox
+# load the child (any object) and the module into a sandbox
 sandbox = Kindergarten.sandbox(child)
 sandbox.load_module(MyPlayPerimeter)
 
 # you can now call the sandboxed methods on the sandbox
-sandbox.watch_tv(CableTV.new)  # fails with Kindergarten::AccessDenied
+sandbox.playing.watch_tv(CableTV.new)   # fails with Kindergarten::AccessDenied
 30.times do
-  sandbox.eat(Liquorice.new)   # fails after a while
+  sandbox.playing.eat(Liquorice.new)    # fails after a while
 end
 
-sandbox.sleep(:long)           # fails with NoMethodError
+sandbox.playing.sleep(:long)            # fails with NoMethodError
 
-sandbox.allowed?(:watch, Television)
+sandbox.allows?(:watch, Television)
 # => true
 ```
 
