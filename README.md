@@ -6,6 +6,28 @@
 
 A way to achieve modularity and modular security with a sandbox on steroids.
 
+## Introduction
+
+### Modules
+A Kindergarten could be seen as collection of service objects, each
+representing a 'play area' (think: doll area, lego table, etc. etc.).
+
+Within the realm of kindergarten, the service objects are refered to as
+modules.
+
+### Sandboxing
+The modules are plugged into the kindergarten and can be governed, both per
+module and kindergarten wide. There are governesses looking for, and preventing
+trouble.
+
+Each module is not just exposed as-is; it is sandboxed. Which means that they
+must specify which methods are to be played with.
+
+### Child
+What good would a kindergarten with a sandbox full of toys be without a child?
+In a Rails context; the most logical choise for a child would be
+the ```current_user```.
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -23,65 +45,67 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
-# define a child
-child = User.find(2)
+  # define a child
+  child = User.find(2)
 
-# define a module (perimeter) for the child to play in
-class MyPlayModule < Kindergarten::Perimeter
-  # every module must have a purpose, it is it's namespace
-  purpose :playing
+  # define a module (perimeter) for the child to play in
+  class MyPlayModule < Kindergarten::Perimeter
+    # every module must have a purpose.
+    # The purpose also serves as a namespace
+    #
+    purpose :playing
 
-  # use can-can rules to govern the perimeter
-  govern do
-    can :watch, Television
-    cannot :watch, CableTV
+    # use can-can rules to govern the perimeter
+    govern do
+      can :watch, Television
+      cannot :watch, CableTV
 
-    can :eat, Candy do |candy|
-      child.quotum.allows(candy)
+      can :eat, Candy do |candy|
+        child.quotum.allows(candy)
+      end
+    end
+
+    # define exposed methods
+    expose :watch_tv, :eat
+
+    def watch_tv(tv)
+      guard(:watch, tv)
+      child.watch(tv)
+
+      sleep(:four)
+    end
+
+    def eat(candy)
+      guard(:eat, candy)
+      child.eat(candy)
+    end
+
+    def sleep(len) # not_accessible_from_outside
+      child.sleep(len)
+    end
+
+    # or expose methods in an 'annotation like way'
+
+    expose :method
+    # method that does nothing at all
+    def method
     end
   end
 
-  # define exposed methods
-  expose :watch_tv, :eat
+  # load the child (any object) and the module into a sandbox
+  sandbox = Kindergarten.sandbox(child)
+  sandbox.load_module(MyPlayPerimeter)
 
-  def watch_tv(tv)
-    guard(:watch, tv)
-    child.watch(tv)
-
-    sleep(:four)
+  # you can now call the sandboxed methods on the sandbox
+  sandbox.playing.watch_tv(CableTV.new)   # fails with Kindergarten::AccessDenied
+  30.times do
+    sandbox.playing.eat(Liquorice.new)    # fails after a while
   end
 
-  def eat(candy)
-    guard(:eat, candy)
-    child.eat(candy)
-  end
+  sandbox.playing.sleep(:long)            # fails with NoMethodError
 
-  def sleep(len) # not_accessible_from_outside
-    child.sleep(len)
-  end
-
-  # or expose methods in an 'annotation like way'
-
-  expose :method
-  # method that does nothing at all
-  def method
-  end
-end
-
-# load the child (any object) and the module into a sandbox
-sandbox = Kindergarten.sandbox(child)
-sandbox.load_module(MyPlayPerimeter)
-
-# you can now call the sandboxed methods on the sandbox
-sandbox.playing.watch_tv(CableTV.new)   # fails with Kindergarten::AccessDenied
-30.times do
-  sandbox.playing.eat(Liquorice.new)    # fails after a while
-end
-
-sandbox.playing.sleep(:long)            # fails with NoMethodError
-
-sandbox.allows?(:watch, Television)
-# => true
+  sandbox.allows?(:watch, Television)
+  # => true
 ```
 
 You are not restricted to only one perimeter/module - that would be most
