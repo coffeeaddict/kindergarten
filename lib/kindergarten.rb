@@ -1,4 +1,7 @@
-require 'cancan'
+require 'cancan/ability'
+require 'cancan/rule'
+require 'cancan/exceptions'
+
 require 'active_support/core_ext'
 
 require "kindergarten/version"

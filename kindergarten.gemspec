@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = Kindergarten::VERSION
 
-  gem.add_dependency('cancan', ['~> 1.6.8'])
+  gem.add_dependency('cancancan', ['~> 1.7'])
   gem.add_dependency('activesupport', ['> 3'])
   gem.add_dependency('rufus-json')
 

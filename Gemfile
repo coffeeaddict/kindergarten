@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # for travis, use a real gemfile
-gem "cancan", "~> 1.6.8"
+gem "cancancan", "~> 1.7"
 gem "activesupport", "> 3"
 gem "rufus-json"
 
